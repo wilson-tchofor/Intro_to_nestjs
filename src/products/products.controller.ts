@@ -1,32 +1,54 @@
-import { Controller, Post, Body, Get, Param, Patch, Delete } from "@nestjs/common";
-import { ProductsService } from "./products.service";
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Patch,
+  Delete,
+  Query,
+  Req,
+} from '@nestjs/common';
+import { ProductsService } from './products.service';
 
 @Controller('products')
-export class ProductsController{
-    constructor(private readonly productsService: ProductsService) { }
-    
-    @Post()
-    addProduct(@Body('title') prodTitle: string, @Body('description') prodDesc: string, @Body('price') prodPrice: number): any{
-        const product = this.productsService.insertProduct(prodTitle, prodDesc, prodPrice);
-        return { status:'success', data:product };
-    }
+export class ProductsController {
+  constructor(private readonly productsService: ProductsService) {}
 
-    @Get()
-    getAllProducts() {
-        return {status:'success',products: this.productsService.getProducts()};
-    }
-    @Get(':id')
-    getProduct(@Param('id') id: string) {
-        return {status: 'success', data: this.productsService.getProduct(id)}
-    }
+  @Post()
+  async addProduct(
+    @Body('title') prodTitle: string,
+    @Body('description') prodDesc: string,
+    @Body('price') prodPrice: number
+  ) {
+    const product = await this.productsService.insertProduct(
+      prodTitle,
+      prodDesc,
+      prodPrice
+    );
+    return { status: 'success', data: product };
+  }
 
-    @Patch(":id")
-    updateProduct(@Param('id') id: string, @Body() data: any) {
-        return {status:'success', data: this.productsService.updateProduct(id,data)}
-    }
+  @Get()
+  async getAllProducts() {
+    const products = await this.productsService.getAllProducts();
+    return { status: 'success', data: products };
+  }
+  @Get(':id')
+  async getProduct(@Param('id') id: string) {
+    const product = await this.productsService.getProduct(id);
+    return { status: 'success', data: product };
+  }
 
-    @Delete(":id")
-    deleteProduct(@Param('id') id: string) {
-        return { status: 'success', data: this.productsService.deleteProduct(id) };
-    }
+  @Patch(':id')
+  async updateProduct(@Param('id') id: string, @Body() data: any) {
+    const updatedProduct = await this.productsService.updateProduct(id, data);
+    return { status: 'success', data: updatedProduct };
+  }
+
+  @Delete(':id')
+  async eleteProduct(@Param('id') id: string) {
+    await this.productsService.deleteProduct(id);
+    return { status: 'success', data: null };
+  }
 }
