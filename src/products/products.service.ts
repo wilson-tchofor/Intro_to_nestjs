@@ -32,9 +32,8 @@ export class ProductsService{
     }
 
     deleteProduct(id: string): void {
-        const product = this.products.find(product => product.id === id);
-        if (!product) throw new NotFoundException('Product not found');
-        const newProducts = this.products.filter(product => product.id !== id);
-        this.products = newProducts;
+        const index = this.products.findIndex(product => product.id === id);
+        if (index<0) throw new NotFoundException('Product not found');
+        this.products.splice(index,1);
     }
 }
